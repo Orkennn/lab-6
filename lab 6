@@ -1,0 +1,105 @@
+import os
+import time
+
+
+def time_decorator(func):
+    def wrapper(*args, **kwargs):
+        time1 = time.time()
+        print(f"Execution time of {func.__name__, time1}")
+        result = func(*args, **kwargs)
+        time2 = time.time()
+        dif = time2 - time1
+        print(f'Execution time of {func.__name__}: {dif}')
+        return result
+    return wrapper
+
+
+
+class CommandPrompt:
+
+    def __init__(self):
+        self.directory_path = None
+        self.new_directory = None
+        self.current_directory = os.getcwd()
+        self.directory_to_delete = None
+        self.file_to_delete = None
+        self.cd_command = None
+
+    @time_decorator
+    def dir(self):
+        try:
+             self.directory_path = input('Введите путь к вашему файлу...')
+             contents = os.listdir(self.directory_path)
+
+             print('Содержимое папки:', contents)
+
+        except Exception as e:
+            print(f'Указан неверный путь...{e}',)
+
+    @time_decorator
+    def transition(self):
+        try:
+            print("Текущая директория:", os.getcwd())
+            self.cd_command = input("Введите команду (cd или cd..): ")
+
+            if self.cd_command == "cd":
+                directory_name = input("Введите название папки: ")
+                os.chdir(directory_name)
+            elif self.cd_command == "cd..":
+                os.chdir("..")
+            else:
+                raise ValueError("Неизвестная команда: {}".format(self.cd_command))
+
+            self.current_directory = os.getcwd()
+            print("Текущая директория теперь:", self.current_directory)
+
+        except Exception as e:
+            print(f"Ошибка: {e}")
+
+    @time_decorator
+    def create_directory(self):
+        try:
+            self.new_directory = input('название новой директории')
+            os.mkdir(self.new_directory)
+            print(f"{self.new_directory} создана успешна")
+        except Exception as e:
+            print('Невозможно создать директорию')
+
+    @time_decorator
+    def delete_directory(self):
+        try:
+            self.directory_to_delete = input('Выберите директорию...')
+            os.rmdir(self.directory_to_delete)
+            print(f'{self.directory_to_delete} удален успешно...')
+        except Exception as e:
+            print("FileNotFoundError: [WinError 2] Не удается найти указанный файл: 'folderR'")
+
+    @time_decorator
+    def delete_file(self):
+        try:
+            self.file_to_delete = input('Выберите файл...')
+            os.remove(self.file_to_delete)
+            print(f'{self.file_to_delete} удален успешно...')
+        except Exception as e:
+            print("Error")
+
+    @time_decorator
+    def update_name(self):
+        try:
+            self.directory_to_update = input('Выберите файл который хотите переименовать...')
+            self.directory_to_update1 = input('Введите новое имя файла...')
+            os.rename(self.directory_to_update, self.directory_to_update1)
+            print(f'{self.directory_to_update} успешно переименован в {self.directory_to_update1}')
+        except Exception as e:
+            print(f'FileNotFoundError: {e}')
+
+    @time_decorator
+    def read_file(self, file_name):
+        try:
+            with open(file_name, 'r') as file:
+                content = file.read()
+                print(f"Содержимое файла {file_name}:\n{content}")
+        except Exception as e:
+            print(f"Файл {file_name} не найден или {e}")
+
+
